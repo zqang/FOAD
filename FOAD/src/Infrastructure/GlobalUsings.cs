@@ -1,0 +1,30 @@
+﻿global using System.Reflection;
+global using Ardalis.GuardClauses;
+global using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.AspNetCore.Builder;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.EntityFrameworkCore.Diagnostics;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.EntityFrameworkCore.ChangeTracking;
+global using System.ComponentModel.DataAnnotations;
+
+global using FOAD.Domain.AggregatesModel.OrderAggregate;
+global using FOAD.Domain.AggregatesModel.BuyerAggregate;
+global using FOAD.Domain.Exceptions;
+global using FOAD.Domain.Entities;
+global using FOAD.Domain.Seedwork;
+global using FOAD.Domain.Models;
+global using FOAD.Domain.Interfaces;
+global using FOAD.Domain.Common;
+global using FOAD.Domain.Constants;
+global using FOAD.Infrastructure.Repositories;
+global using FOAD.Infrastructure.Idempotency;
+global using FOAD.Infrastructure.Data.Interceptors;
+global using FOAD.Infrastructure.Data;
+global using FOAD.Infrastructure.Identity;
+
