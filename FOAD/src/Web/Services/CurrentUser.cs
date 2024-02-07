@@ -1,7 +1,5 @@
 ﻿using System.Security.Claims;
 
-using FOAD.Application.Common.Interfaces;
-
 namespace FOAD.Web.Services;
 public class CurrentUser : IUser
 {

@@ -14,13 +14,13 @@ public class Order
     [Required]
     public Address? Address { get; private set; }
 
-    public int? GetBuyerId => _buyerId;
-    private int? _buyerId;
+    public int GetBuyerId => _buyerId;
+    private int _buyerId;
 
-    public OrderStatus? OrderStatus { get; private set; }
+    public OrderStatus OrderStatus { get; private set; } = OrderStatus.None;
     private int _orderStatusId;
 
-    private string? _description;
+    private string _description = "";
 
     // Draft orders have this set to true. Currently we don't check anywhere the draft status of an Order, but we could do it if needed
 #pragma warning disable CS0414 // The field 'Order._isDraft' is assigned but its value is never used
@@ -34,7 +34,7 @@ public class Order
     private readonly List<OrderItem> _orderItems;
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
 
-    private int? _paymentMethodId;
+    private int _paymentMethodId;
 
     public static Order NewDraft()
     {
@@ -52,7 +52,7 @@ public class Order
     }
 
     public Order(string userId, string userName, Address address, int cardTypeId, string cardNumber, string cardSecurityNumber,
-            string cardHolderName, DateTime cardExpiration, int? buyerId = null, int? paymentMethodId = null) : this()
+            string cardHolderName, DateTime cardExpiration, int buyerId, int paymentMethodId) : this()
     {
         _buyerId = buyerId;
         _paymentMethodId = paymentMethodId;

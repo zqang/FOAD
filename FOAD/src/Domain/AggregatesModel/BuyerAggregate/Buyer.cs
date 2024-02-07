@@ -6,9 +6,9 @@ public class Buyer
     : BaseEntity, IAggregateRoot
 {
     [Required]
-    public string? IdentityGuid { get; private set; }
+    public string IdentityGuid { get; private set; } = Guid.NewGuid().ToString();
 
-    public string? Name { get; private set; }
+    public string Name { get; private set; } = "";
 
     private readonly List<PaymentMethod> _paymentMethods;
 

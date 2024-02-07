@@ -3,6 +3,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using FOAD.EventBusRabbitMQ;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -21,11 +22,11 @@ public class RabbitMQEventBus(
     private readonly int _retryCount = options.Value.RetryCount;
     private readonly TextMapPropagator _propagator = rabbitMQTelemetry.Propagator;
     private readonly ActivitySource _activitySource = rabbitMQTelemetry.ActivitySource;
-    private string _queueName = options.Value.SubscriptionClientName;
+    private readonly string _queueName = options.Value.SubscriptionClientName;
     private readonly EventBusSubscriptionInfo _subscriptionInfo = subscriptionOptions.Value;
-    private IConnection _rabbitMQConnection;
+    private IConnection? _rabbitMQConnection;
 
-    private IModel _consumerChannel;
+    private IModel? _consumerChannel;
 
     public Task PublishAsync(IntegrationEvent @event)
     {
@@ -85,7 +86,7 @@ public class RabbitMQEventBus(
 
             _propagator.Inject(new PropagationContext(contextToInject, Baggage.Current), properties, InjectTraceContextIntoBasicProperties);
 
-            SetActivityContext(activity, routingKey, "publish");
+            SetActivityContext(activity!, routingKey, "publish");
 
             if (logger.IsEnabled(LogLevel.Trace))
             {
@@ -105,7 +106,7 @@ public class RabbitMQEventBus(
             }
             catch (Exception ex)
             {
-                activity.SetExceptionTags(ex);
+                activity?.SetExceptionTags(ex);
 
                 throw;
             }
@@ -138,7 +139,7 @@ public class RabbitMQEventBus(
             if (props.Headers.TryGetValue(key, out var value))
             {
                 var bytes = value as byte[];
-                return [Encoding.UTF8.GetString(bytes)];
+                return [Encoding.UTF8.GetString(bytes!)];
             }
             return [];
         }
@@ -153,7 +154,7 @@ public class RabbitMQEventBus(
 
         using var activity = _activitySource.StartActivity(activityName, ActivityKind.Client, parentContext.ActivityContext);
 
-        SetActivityContext(activity, eventArgs.RoutingKey, "receive");
+        SetActivityContext(activity!, eventArgs.RoutingKey, "receive");
 
         var eventName = eventArgs.RoutingKey;
         var message = Encoding.UTF8.GetString(eventArgs.Body.Span);
@@ -173,13 +174,13 @@ public class RabbitMQEventBus(
         {
             logger.LogWarning(ex, "Error Processing message \"{Message}\"", message);
 
-            activity.SetExceptionTags(ex);
+            activity?.SetExceptionTags(ex);
         }
 
         // Even on exception we take the message off the queue.
         // in a REAL WORLD app this should be handled with a Dead Letter Exchange (DLX). 
         // For more information see: https://www.rabbitmq.com/dlx.html
-        _consumerChannel.BasicAck(eventArgs.DeliveryTag, multiple: false);
+        _consumerChannel?.BasicAck(eventArgs.DeliveryTag, multiple: false);
     }
 
     private async Task ProcessEvent(string eventName, string message)
@@ -205,14 +206,14 @@ public class RabbitMQEventBus(
             // Deserialize the event
             var integrationEvent = DeserializeMessage(message, eventType);
 
-            await handler.Handle(integrationEvent);
+            await handler.Handle(integrationEvent!);
         }
     }
 
     [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
         Justification = "The 'JsonSerializer.IsReflectionEnabledByDefault' feature switch, which is set to false by default for trimmed .NET apps, ensures the JsonSerializer doesn't use Reflection.")]
     [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "See above.")]
-    private IntegrationEvent DeserializeMessage(string message, Type eventType)
+    private IntegrationEvent? DeserializeMessage(string message, Type eventType)
     {
         return JsonSerializer.Deserialize(message, eventType, _subscriptionInfo.JsonSerializerOptions) as IntegrationEvent;
     }

@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using FOAD.Application.Common.Commands.Identified;
-using FOAD.Application.Common.Interfaces;
-using FOAD.Domain.AggregatesModel.OrderAggregate;
-using FOAD.Domain.Interfaces;
+﻿using FOAD.Application.Orders.EventHandlers.IntegrationEvents.Order;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace FOAD.Application.Orders.Commands.CreateOrder;
 [DataContract]
@@ -13,40 +10,40 @@ public class CreateOrderCommand
     private readonly List<OrderItemDTO> _orderItems;
 
     [DataMember]
-    public string? UserId { get; private set; }
+    public string UserId { get; private set; } = "";
 
     [DataMember]
-    public string? UserName { get; private set; }
+    public string UserName { get; private set; } = "";
 
     [DataMember]
-    public string? City { get; private set; }
+    public string City { get; private set; } = "";
 
     [DataMember]
-    public string? Street { get; private set; }
+    public string Street { get; private set; } = "";
 
     [DataMember]
-    public string? State { get; private set; }
+    public string State { get; private set; } = "";
 
     [DataMember]
-    public string? Country { get; private set; }
+    public string Country { get; private set; } = "";
 
     [DataMember]
-    public string? ZipCode { get; private set; }
+    public string ZipCode { get; private set; } = "";
 
     [DataMember]
-    public string? CardNumber { get; private set; }
+    public string CardNumber { get; private set; } = "";
 
     [DataMember]
-    public string? CardHolderName { get; private set; }
+    public string CardHolderName { get; private set; } = "";
 
     [DataMember]
     public DateTime CardExpiration { get; private set; }
 
     [DataMember]
-    public string? CardSecurityNumber { get; private set; }
+    public string CardSecurityNumber { get; private set; } = "";
 
     [DataMember]
-    public int? CardTypeId { get; private set; }
+    public int CardTypeId { get; private set; }
 
     [DataMember]
     public IEnumerable<OrderItemDTO> OrderItems => _orderItems;
@@ -109,8 +106,8 @@ public class CreateOrderCommandHandler
         // DDD patterns comment: Add child entities and value-objects through the Order Aggregate-Root
         // methods and constructor so validations, invariants and business logic 
         // make sure that consistency is preserved across the whole aggregate
-        var address = new Address(message.Street!, message.City!, message.State!, message.Country!, message.ZipCode!);
-        var order = new Order(message.UserId, message.UserName, address, message.CardTypeId, message.CardNumber, message.CardSecurityNumber, message.CardHolderName, message.CardExpiration);
+        var address = new Address(message.Street, message.City, message.State, message.Country, message.ZipCode);
+        var order = new Order(message.UserId, message.UserName!, address, message.CardTypeId, message.CardNumber, message.CardSecurityNumber, message.CardHolderName, message.CardExpiration);
 
         foreach (var item in message.OrderItems)
         {

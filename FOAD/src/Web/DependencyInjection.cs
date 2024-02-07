@@ -1,5 +1,4 @@
 ﻿using Azure.Identity;
-using FOAD.Application.Common.Interfaces;
 using FOAD.Infrastructure.Data;
 using FOAD.Web.Services;
 using Microsoft.AspNetCore.Mvc;

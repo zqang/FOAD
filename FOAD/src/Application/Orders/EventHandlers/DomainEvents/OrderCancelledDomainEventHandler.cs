@@ -1,4 +1,8 @@
-﻿namespace FOAD.Application.DomainEventHandlers;
+﻿using FOAD.Application.IntegrationEvents;
+using FOAD.Application.Orders.EventHandlers.IntegrationEvents.OrderStatus;
+using FOAD.Domain.AggregatesModel.BuyerAggregate;
+
+namespace FOAD.Application.DomainEventHandlers;
 
 public partial class OrderCancelledDomainEventHandler
                 : INotificationHandler<OrderCancelledDomainEvent>
@@ -25,9 +29,12 @@ public partial class OrderCancelledDomainEventHandler
         OrderingApiTrace.LogOrderStatusUpdated(_logger, domainEvent.Order.Id, nameof(OrderStatus.Cancelled), OrderStatus.Cancelled.Id);
 
         var order = await _orderRepository.GetAsync(domainEvent.Order.Id);
-        var buyer = await _buyerRepository.FindByIdAsync(order.GetBuyerId!.Value);
+        var buyer = await _buyerRepository.FindByIdAsync(order.GetBuyerId);
 
-        var integrationEvent = new OrderStatusChangedToCancelledIntegrationEvent(order.Id, order.OrderStatus.Name, buyer.Name, buyer.IdentityGuid);
+        var orderStockList = domainEvent.Order.OrderItems
+            .Select(orderItem => new OrderStockItem(orderItem.ProductId, orderItem.GetUnits()));
+
+        var integrationEvent = new OrderStatusChangedIntegrationEvent(order.Id, order.OrderStatus.Name, buyer.Name, buyer.IdentityGuid, orderStockList);
         await _orderingIntegrationEventService.AddAndSaveEventAsync(integrationEvent);
     }
 }

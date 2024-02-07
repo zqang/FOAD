@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{DC2CDCAE-5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{51DA912B-BA9B-4799-A9C9-77BDF7BA821E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventBus", "FOAD\src\EventBus\EventBus.csproj", "{A77D6CFB-3AA8-4971-9455-DA52E0135769}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventBus", "FOAD\src\EventBus\EventBus.csproj", "{A77D6CFB-3AA8-4971-9455-DA52E0135769}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
